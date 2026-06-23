@@ -81,7 +81,7 @@ export default function Home() {
   };
 
   const { socketConnected, socketId, sendMessage } = useWebSocket(
-    'ws://fleetrush-gd0r.onrender.com',
+    'wss://fleetrush-gd0r.onrender.com',
     handleSocketMessage
   );
 
