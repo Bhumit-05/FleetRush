@@ -1,4 +1,3 @@
-// src/components/AuthForm.js
 'use client';
 import { useState } from 'react';
 
@@ -17,7 +16,7 @@ export default function AuthForm({ onAuthSuccess }) {
     const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
     
     try {
-      const res = await fetch(`http://localhost:4000${endpoint}`, {
+      const res = await fetch(`https://fleetrush-gd0r.onrender.com${endpoint}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),

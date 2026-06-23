@@ -14,7 +14,6 @@ async function initializeTables() {
 
   try {
     await db.query(createUserTableQuery);
-    console.log('PostgreSQL Tables checked/created successfully in NeonDB.');
   } catch (err) {
     console.error('Failed to initialize database tables:', err);
     process.exit(1);

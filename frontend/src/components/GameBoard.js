@@ -1,4 +1,3 @@
-// src/components/GameBoard.js
 'use client';
 import { useState, useEffect } from 'react';
 import BattleLog from './BattleLog';
@@ -7,7 +6,7 @@ export default function GameBoard({ socketId, roomId, opponentId, sendMessage, s
   const [gameStatus, setGameStatus] = useState('SETUP'); // SETUP, PLAYING, FINISHED
   const [myBoard, setMyBoard] = useState(Array(6).fill(null).map(() => Array(6).fill(0)));
   const [radarBoard, setRadarBoard] = useState(Array(6).fill(null).map(() => Array(6).fill(0)));
-  const [cooldowns, setCooldowns] = useState({}); // Tracks locked-out tile coordinates
+  const [cooldowns, setCooldowns] = useState({});
   const [placedShipTiles, setPlacedShipTiles] = useState(0);
   const [alertMsg, setAlertMsg] = useState('Place 6 ship tiles on your board to prepare for battle!');
 
@@ -30,6 +29,10 @@ export default function GameBoard({ socketId, roomId, opponentId, sendMessage, s
         handleIncomingStrike(payload);
         break;
       case 'GAME_OVER':
+        // FIXED: Force the final board rendering state update right here when the game ends
+        if (payload.finalStrike) {
+          handleIncomingStrike(payload.finalStrike);
+        }
         setGameStatus('FINISHED');
         setAlertMsg(payload.winnerId === socketId ? '🏆 VICTORY! You destroyed the enemy fleet!' : '💀 DEFEAT! Your fleet was completely sunk.');
         break;
@@ -63,13 +66,17 @@ export default function GameBoard({ socketId, roomId, opponentId, sendMessage, s
     const isMeAttacking = attackerId === socketId;
 
     if (isMeAttacking) {
-      const updatedRadar = [...radarBoard.map(r => [...r])];
-      updatedRadar[row][col] = result === 'HIT' ? 3 : 2; // 3 = Hit, 2 = Miss
-      setRadarBoard(updatedRadar);
+      setRadarBoard(prevRadar => {
+        const updatedRadar = [...prevRadar.map(r => [...r])];
+        updatedRadar[row][col] = result === 'HIT' ? 3 : 2;
+        return updatedRadar;
+      });
     } else {
-      const updatedMyBoard = [...myBoard.map(r => [...r])];
-      updatedMyBoard[row][col] = result === 'HIT' ? 3 : 2;
-      setMyBoard(updatedMyBoard);
+      setMyBoard(prevBoard => {
+        const updatedMyBoard = [...prevBoard.map(r => [...r])];
+        updatedMyBoard[row][col] = result === 'HIT' ? 3 : 2;
+        return updatedMyBoard;
+      });
     }
   };
 
@@ -97,10 +104,10 @@ export default function GameBoard({ socketId, roomId, opponentId, sendMessage, s
     if (isRadar && cooldowns[coordKey]) return 'bg-amber-600/50 border border-amber-500 animate-pulse cursor-not-allowed';
     
     switch (value) {
-      case 1: return 'bg-zinc-600 border border-zinc-400'; // Ship
-      case 2: return 'bg-blue-950/40 border border-blue-800/60 text-blue-500 flex items-center justify-center font-bold'; // Miss
-      case 3: return 'bg-red-950/50 border border-red-500 text-red-500 flex items-center justify-center font-bold animate-bounce'; // Hit
-      default: return 'bg-zinc-950 border border-zinc-900 hover:bg-zinc-800/40 transition-colors'; // Empty
+      case 1: return 'bg-zinc-600 border border-zinc-400';
+      case 2: return 'bg-blue-950/40 border border-blue-800/60 text-blue-500 flex items-center justify-center font-bold';
+      case 3: return 'bg-red-950/50 border border-red-500 text-red-500 flex items-center justify-center font-bold animate-bounce';
+      default: return 'bg-zinc-950 border border-zinc-900 hover:bg-zinc-800/40 transition-colors';
     }
   };
 
@@ -137,7 +144,6 @@ export default function GameBoard({ socketId, roomId, opponentId, sendMessage, s
           )}
         </div>
 
-        {/* ENEMY RADAR GRID */}
         <div className="flex flex-col items-center">
           <h3 className="text-xs font-bold uppercase tracking-widest text-zinc-400 mb-3">🎯 Enemy Tracking Radar</h3>
           <div className="grid grid-cols-6 gap-1 p-1.5 bg-black border border-zinc-800 rounded-xl w-72 h-72">

@@ -1,4 +1,3 @@
-// src/components/BattleLog.js
 'use client';
 import { useState, useEffect, useRef } from 'react';
 

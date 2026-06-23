@@ -11,7 +11,6 @@ export function useWebSocket(url, onMessageReceived) {
 
     ws.onopen = () => {
       setSocketConnected(true);
-      console.log('⚡ WebSocket Connection established with core engine.');
     };
 
     ws.onmessage = (event) => {
@@ -33,7 +32,6 @@ export function useWebSocket(url, onMessageReceived) {
 
     ws.onclose = () => {
       setSocketConnected(false);
-      console.log('Disconnected from backend socket stream.');
     };
 
     return () => {

@@ -35,7 +35,7 @@ export default function Home() {
     const token = localStorage.getItem('fleetrush_token');
 
     try {
-      const res = await fetch(`http://localhost:4000/api/user/${user.username}`, {
+      const res = await fetch(`https://fleetrush-gd0r.onrender.com/api/user/${user.username}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

@@ -10,7 +10,6 @@ async function handleJoinQueue(ws) {
   if (queue.includes(socketId)) return;
 
   queue.push(socketId);
-  console.log(`Player ${socketId} queued. Queue length: ${queue.length}`);
 
   if (queue.length >= 2) {
     const p1Id = queue.shift();
@@ -30,7 +29,6 @@ async function handleJoinQueue(ws) {
 
       broadcastToRoom(roomId, 'MATCH_FOUND', { roomId, opponentId: p2Id }, p1Id);
       broadcastToRoom(roomId, 'MATCH_FOUND', { roomId, opponentId: p1Id }, p2Id);
-      console.log(`Match Start in ${roomId} (Saved to Redis)`);
     }
   }
 }
@@ -42,7 +40,6 @@ function removeFromQueue(socketId) {
 function handleCancelMatchmaking(ws) {
   const socketId = ws.socketId;
   removeFromQueue(socketId);
-  console.log(`Player ${socketId} canceled matchmaking. Queue length: ${queue.length}`);
 }
 
 module.exports = { handleJoinQueue, removeFromQueue, handleCancelMatchmaking };

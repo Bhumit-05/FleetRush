@@ -20,10 +20,6 @@ async function updateMatchResults(winnerUsername, loserUsername) {
     await db.query(updateLoserQuery, [loserUsername]);
 
     await db.query('COMMIT');
-
-    console.log(
-      `NeonDB Updated: ${winnerUsername} (+1 Win), ${loserUsername} (+1 Loss).`
-    );
   } catch (err) {
     await db.query('ROLLBACK');
 

@@ -1,15 +1,13 @@
-// src/network/socketServer.js
 const { WebSocketServer } = require('ws');
 const { v4: uuidv4 } = require('uuid');
 const { activeConnections, sendToClient, broadcastToRoom } = require('./roomManager');
 const { handleJoinQueue, removeFromQueue } = require('../game/matchmaker');
 const { processTorpedoStrike } = require('../game/gameLogic');
 const { updateMatchResults } = require('../controllers/leaderboardController');
-const { getGameSession, saveGameSession, deleteGameSession } = require('../config/redis'); // Added Redis methods
+const { getGameSession, saveGameSession, deleteGameSession } = require('../config/redis');
 
 function initWebSocketServer(server) {
   const wss = new WebSocketServer({ server });
-  console.log('⚡ Raw WebSocket Engine attached');
 
   wss.on('connection', (ws) => {
     const socketId = uuidv4();
@@ -51,7 +49,6 @@ function initWebSocketServer(server) {
               
               await saveGameSession(roomId, game);
               broadcastToRoom(roomId, 'GAME_START', { status: 'PLAYING' });
-              console.log(`Battle commenced in Room: ${roomId} (State synced to Redis)`);
             } else {
               await saveGameSession(roomId, game);
               sendToClient(ws, 'WAITING_FOR_OPPONENT', { msg: 'Your board is locked in. Waiting on enemy.' });
@@ -85,7 +82,6 @@ function initWebSocketServer(server) {
               game.winner = socketId;
               
               broadcastToRoom(roomId, 'GAME_OVER', { winnerId: socketId });
-              console.log(`🏆 Match Finished! Winner: ${socketId}`);
 
               const winnerSocket = activeConnections.get(socketId);
               const loserSocket = activeConnections.get(defenderPlayerId);
@@ -93,7 +89,6 @@ function initWebSocketServer(server) {
               if (winnerSocket && loserSocket) {
                 updateMatchResults(winnerSocket.username, loserSocket.username);
               }
-
               await deleteGameSession(roomId);
             } else {
               await saveGameSession(roomId, game);
@@ -119,7 +114,6 @@ function initWebSocketServer(server) {
           await deleteGameSession(ws.roomId);
         }
       }
-      console.log(`Disconnected: ${socketId}`);
     });
   });
 }
