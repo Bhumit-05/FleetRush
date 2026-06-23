@@ -1,0 +1,14 @@
+# Dependencies
+**/node_modules/
+
+# Next.js build outputs and local environment files
+frontend/.next/
+frontend/out/
+
+# Backend secrets and runtime files
+backend/.env
+backend/.env.local
+
+# Operating system files
+.DS_Store
+Thumbs.db
