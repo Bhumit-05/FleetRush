@@ -11,7 +11,7 @@ const app = express();
 const PORT = process.env.PORT || 4000;
 
 app.use(cors({
-  origin: ['http://localhost:3000', 'https://fleetrush-gd0r.onrender.com'],
+  origin: ['http://localhost:3000', 'https://fleet-rush.vercel.app'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
